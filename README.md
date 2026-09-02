@@ -34,8 +34,9 @@ The investigation was based on the following evidence:
 - PCAP containing 17 packets of TCP/HTTP traffic.
 - Source: `10.0.2.15`
 - Destination: `198.51.100.50`
+  
+![TCP/HTTP traffic}(TCP_HTTP_Traffic.png)
 
-!{TCP/HTTP traffic}(TCP_HTTP_Traffic.png)
 - HTTP request: `GET /download/update.exe`
 - HTTP response: `200 OK`
 - Content-Type: `application/octet-stream`
