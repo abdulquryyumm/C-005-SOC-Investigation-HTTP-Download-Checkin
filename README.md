@@ -124,3 +124,50 @@ An analyst must distinguish between:
 In this investigation, the PCAP provides evidence of an executable-like object being downloaded, followed by installation-related and heartbeat communications. However, the PCAP does not independently prove that the downloaded object was executed.
 
 Therefore, conclusions must not claim execution, persistence, or full system compromise unless additional endpoint or forensic evidence supports those claims.
+
+## 5. Investigation Findings
+- Workstation `10.0.2.15` communicated with server `198.51.100.50` over HTTP on port 80.
+- The workstation requested `GET /download/update.exe`.
+- The server returned `200 OK` with `Content-Type: application/octet-stream` and a content length of 68 bytes.
+- The exported object began with the `MZ` signature, indicating an executable-like Windows file format.
+- The workstation subsequently sent `POST /api/checkin` with `status=installed`.
+- A second check-in reported `status=heartbeat`.
+- Both check-ins received `200 OK` responses with `ACK:OK`.
+- The HTTP User-Agent identified `curl/8.1` as the client.
+
+  ## 6. Analysis
+The traffic shows a sequence of activity involving an executable-like object:
+
+GET /download/update.exe
+        ↓
+Executable-like object returned
+        ↓
+POST /api/checkin
+status=installed
+        ↓
+POST /api/checkin
+status=heartbeat
+
+This sequence is consistent with the delivery of a potentially malicious file followed by installation-related and continued check-in activity.
+
+The use of `curl/8.1` as the HTTP client also indicates that the communication was performed through cURL rather than a conventional web browser.
+
+## 7. Classification
+
+Classification: Malicious Activity
+
+The activity is classified as malicious based on the sequence of an executable-like object being downloaded, followed by installation-related and heartbeat communications with the same remote server.
+
+## 8. Conclusion & Recommendations
+
+The investigation identified suspicious HTTP activity involving the download of an executable-like object from `198.51.100.50`, followed by installation-related and heartbeat communications from workstation `10.0.2.15`.
+
+The activity is classified as malicious within the scope of this investigation. However, execution of the downloaded object could not be independently confirmed from the PCAP.
+
+### Recommendations
+- Isolate workstation `10.0.2.15` from the network.
+- Restrict communication with the identified remote server.
+- Preserve the PCAP and downloaded object for further analysis.
+- Conduct endpoint investigation to determine whether the downloaded object was executed or established persistence.
+
+The PCAP does not independently prove that the downloaded object was executed.
